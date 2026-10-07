@@ -12,28 +12,25 @@
   h1 { font-size: 28px; line-height: 1.2; margin: 0 0 12px; }
   p { color: var(--muted); }
   .card { background: var(--card); border-radius: 18px; padding: 18px; margin-top: 20px; }
-  button { width: 100%; border: 0; border-radius: 12px; padding: 14px; font: 600 17px -apple-system, sans-serif; background: var(--accent); color: #fff; }
+  .btn { display: block; box-sizing: border-box; width: 100%; text-align: center; text-decoration: none; border-radius: 12px; padding: 14px; font: 600 17px -apple-system, sans-serif; background: var(--accent); color: #fff; }
   a { color: var(--accent); }
 </style>
 </head>
 <body><main>
 <h1>Someone wants to watch together on Yonder</h1>
-<p>If you have Yonder on this iPhone, this link should have opened it. If it didn't:</p>
+<p>If you have Yonder on this iPhone, this link should have opened it. If it didn't, tap the button below.</p>
 <div class="card">
-  <p><strong>1.</strong> Tap the button to copy this profile.<br><strong>2.</strong> Open Yonder → Together → <strong>Paste a code</strong>.</p>
-  <button id="copy">Copy profile</button>
+  <a id="open" class="btn" href="#">Open in Yonder</a>
   <p id="msg" style="margin:10px 0 0"></p>
 </div>
-<p style="margin-top:24px">Don't have Yonder yet? It's in testing. Ask the person who sent this for an invite.</p>
+<p style="margin-top:24px">Don't have Yonder yet? It's in testing. Ask the person who sent this for an invite, then tap this link again.</p>
 <script>
-  // the profile rides after "#", which never reaches any server
-  var code = decodeURIComponent((location.hash || "").slice(1));
-  var btn = document.getElementById("copy"), msg = document.getElementById("msg");
-  if (!code) { btn.disabled = true; msg.textContent = "This link has no profile in it."; }
-  btn.onclick = function () {
-    navigator.clipboard.writeText(code).then(function () { msg.textContent = "Copied. Now open Yonder."; },
-      function () { msg.textContent = "Couldn't copy. Press and hold to copy the link instead."; });
-  };
+  // the profile rides after "#", which never reaches any server;
+  // the button hands it to the app's own yonder:// link (no copying or pasting)
+  var code = (location.hash || "").slice(1);
+  var open = document.getElementById("open"), msg = document.getElementById("msg");
+  if (!code) { open.removeAttribute("href"); open.style.opacity = 0.4; msg.textContent = "This link has no profile in it."; }
+  else { open.href = "yonder://add#" + code; }
 </script>
 </main></body>
 </html>
