@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["JQ2YY73J8H.com.beyondyonder.yonder"],
+        "components": [{ "/": "/add*", "comment": "Yonder profile links: /add/#<code>" }]
+      }
+    ]
+  }
+}
