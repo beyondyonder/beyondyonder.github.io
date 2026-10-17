@@ -14,23 +14,62 @@
   .card { background: var(--card); border-radius: 18px; padding: 18px; margin-top: 20px; }
   .btn { display: block; box-sizing: border-box; width: 100%; text-align: center; text-decoration: none; border-radius: 12px; padding: 14px; font: 600 17px -apple-system, sans-serif; background: var(--accent); color: #fff; }
   a { color: var(--accent); }
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body><main>
-<h1>Someone wants to watch together on Yonder</h1>
-<p>If you have Yonder on this iPhone, this link should have opened it. If it didn't, tap the button below.</p>
-<div class="card">
-  <a id="open" class="btn" href="#">Open in Yonder</a>
-  <p id="msg" style="margin:10px 0 0"></p>
+<h1 id="title">Someone wants to watch together on Yonder</h1>
+
+<!-- iPhone (and iPad): open the app, or get the beta first -->
+<div id="apple" hidden>
+  <p id="lead">If you have Yonder on this iPhone, this link should have opened it. If it didn't, tap Open in Yonder.</p>
+  <div class="card">
+    <a id="open" class="btn" href="#">Open in Yonder</a>
+    <p id="msg" style="margin:10px 0 0"></p>
+  </div>
+  <div class="card">
+    <strong>Don't have Yonder yet?</strong>
+    <p style="margin:6px 0 14px">It's free and in testing through Apple's TestFlight app. Tap below to join, install Yonder, then come back here and tap your link again.</p>
+    <a id="beta" class="btn" href="#">Get Yonder (beta)</a>
+  </div>
 </div>
-<p style="margin-top:24px">Don't have Yonder yet? It's in testing. Ask the person who sent this for an invite, then tap this link again.</p>
+
+<!-- a Mac or PC: the link is meant for a phone -->
+<div id="desktop" hidden>
+  <div class="card">
+    <p style="margin:0">Open this link on your iPhone. Yonder is an iPhone app.</p>
+  </div>
+</div>
+
+<!-- Android and everything else -->
+<div id="other" hidden>
+  <div class="card">
+    <strong>Yonder is only on iPhone for now.</strong>
+    <p id="otherText" style="margin:6px 0 0">Nothing to do here: the person who sent this can keep using Yonder for both of you on their phone.</p>
+  </div>
+</div>
+
 <script>
   // the profile rides after "#", which never reaches any server;
   // the button hands it to the app's own yonder:// link (no copying or pasting)
+  var BETA = "https://testflight.apple.com/join/zDTUArhD";   // the public TestFlight link
   var code = (location.hash || "").slice(1);
-  var open = document.getElementById("open"), msg = document.getElementById("msg");
-  if (!code) { open.removeAttribute("href"); open.style.opacity = 0.4; msg.textContent = "This link has no profile in it."; }
-  else { open.href = "yonder://add#" + code; }
+  var invite = code.indexOf("H.") === 0;   // "get your own profile" from someone who set you up
+  var ua = navigator.userAgent;
+  var ipad = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var apple = /iPhone|iPod/.test(ua) || ipad;
+  var desktop = !apple && /Macintosh|Windows|CrOS|X11/.test(ua) && !/Android/.test(ua);
+  var $ = function (id) { return document.getElementById(id); };
+
+  if (invite) {
+    $("title").textContent = "Your own Yonder profile";
+    $("lead").textContent = "Someone set you up on Yonder on their phone. Open this link in Yonder to get that profile on this iPhone, with every answer you gave.";
+    $("otherText").textContent = "No problem: your profile stays on the phone of the person who sent this, and you can keep finding picks together there.";
+  }
+  $(apple ? "apple" : desktop ? "desktop" : "other").hidden = false;
+  $("beta").href = BETA;
+  if (!code) { $("open").removeAttribute("href"); $("open").style.opacity = 0.4; $("msg").textContent = "This link has no profile in it."; }
+  else { $("open").href = "yonder://add#" + code; }
 </script>
 </main></body>
 </html>
